@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__atlassian__search",
+      "mcp__atlassian__searchConfluenceUsingCql",
+      "mcp__atlassian__searchJiraIssuesUsingJql"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
