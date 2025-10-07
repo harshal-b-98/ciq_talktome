@@ -4,6 +4,17 @@
  * CGL-51: Implement visit summary generation (1-2 line summaries per page)
  * CGL-52: Build interaction logging (clicks, chat, forms)
  * CGL-53: Add persona confidence tracking to session
+ *
+ * ⚠️ DEPRECATED: This module is deprecated in favor of iron-session cookie-based sessions.
+ * Session management now uses encrypted cookies (src/lib/session/cookie-session.ts)
+ * instead of Redis/KV storage. This file is kept for backward compatibility but
+ * should not be used in new code.
+ *
+ * New code should use:
+ * - src/lib/session/cookie-session.ts for session management
+ * - src/lib/server/session.ts for server-side session access
+ *
+ * See: src/lib/session/cookie-session.ts for the new implementation
  */
 
 import { randomUUID } from "crypto";

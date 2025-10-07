@@ -9,8 +9,7 @@ import { generateText } from "ai";
 import { openai } from "@ai-sdk/openai";
 import type { ChatRequest, ChatResponse, ChatMessage } from "./types";
 import { getServerSession } from "../server/session";
-import { logInteraction } from "../session/utils";
-import { InteractionType, type ChatInteraction } from "../session/types";
+import { addInteraction } from "../session/cookie-session";
 import { v4 as uuidv4 } from "uuid";
 
 /**
@@ -47,14 +46,9 @@ export async function handleChatMessage(
     const personaSignals = extractPersonaSignals(request.message);
 
     // Log chat interaction to session (CGL-81)
-    await logInteraction(
-      InteractionType.CHAT,
-      request.route,
-      {
-        message: request.message,
-        response: text,
-      } as unknown as ChatInteraction
-    );
+    // Note: With cookie-based sessions, we only track that a chat occurred
+    // Full message history is managed client-side to stay within 4KB cookie limit
+    await addInteraction("chat", request.route);
 
     const messageId = uuidv4();
     const timestamp = new Date();
@@ -156,44 +150,29 @@ function extractPersonaSignals(message: string): string[] {
 /**
  * Get chat history from session
  * CGL-82: Chat history retrieval from session
+ *
+ * Note: With cookie-based sessions (iron-session), we don't store full chat
+ * message history due to the 4KB cookie limit. Chat history is managed
+ * client-side in the ChatWidget component using localStorage or state.
+ *
+ * This function returns an empty array but can be enhanced in the future
+ * to return the last 2-3 messages if needed.
  */
 export async function getChatHistory(): Promise<ChatMessage[]> {
   try {
     const session = await getServerSession();
 
-    // Filter chat interactions from session
-    const chatInteractions = session.interactions.filter(
-      (interaction) => interaction.type === InteractionType.CHAT
-    );
+    // Cookie-based session only tracks that chats occurred, not full content
+    // Full message history is managed client-side
+    // We can see how many chat interactions happened:
+    const chatCount = session.recentInteractions.filter(
+      (interaction) => interaction.type === "chat"
+    ).length;
 
-    // Convert to ChatMessage format
-    const messages: ChatMessage[] = [];
-    for (const interaction of chatInteractions) {
-      const details = interaction.details as {
-        message?: string;
-        response?: string;
-      };
+    console.log(`Session has ${chatCount} chat interactions recorded`);
 
-      if (details.message) {
-        messages.push({
-          id: `${interaction.id}-user`,
-          role: "user",
-          content: details.message,
-          timestamp: interaction.timestamp,
-        });
-      }
-
-      if (details.response) {
-        messages.push({
-          id: `${interaction.id}-assistant`,
-          role: "assistant",
-          content: details.response,
-          timestamp: interaction.timestamp,
-        });
-      }
-    }
-
-    return messages;
+    // Return empty array - client manages full history
+    return [];
   } catch (error) {
     console.error("Error retrieving chat history:", error);
     return [];

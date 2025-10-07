@@ -1,14 +1,19 @@
 /**
  * Server-side Session Utilities for Server Components
  * CGL-61: Implement session reading in Server Components
+ * Updated to use iron-session with encrypted cookies
  *
  * This module provides utilities for Server Components to read
- * session data synchronously using Next.js cookies().
+ * session data from encrypted cookies (no Redis/KV needed).
  */
 
 import { cookies } from "next/headers";
-import { getOrCreateSession, getCurrentSession } from "../session/utils";
-import type { Session } from "../session/types";
+import {
+  getOrCreateCookieSession,
+  getCurrentCookieSession,
+  updateMetadata,
+  type CookieSessionData,
+} from "../session/cookie-session";
 import type { SessionContext } from "../agent/types";
 
 /**
@@ -17,25 +22,29 @@ import type { SessionContext } from "../agent/types";
  *
  * @returns Session object with user context
  */
-export async function getServerSession(): Promise<Session> {
+export async function getServerSession(): Promise<CookieSessionData> {
   const cookieStore = await cookies();
   const referrer = cookieStore.get("referer")?.value;
 
-  // Extract UTM parameters if available (could be from headers or stored)
-  const utmParams = {
-    utm_source: cookieStore.get("utm_source")?.value,
-    utm_medium: cookieStore.get("utm_medium")?.value,
-    utm_campaign: cookieStore.get("utm_campaign")?.value,
-  };
+  // Extract UTM parameters if available
+  const utmSource = cookieStore.get("utm_source")?.value;
+  const utmMedium = cookieStore.get("utm_medium")?.value;
+  const utmCampaign = cookieStore.get("utm_campaign")?.value;
 
-  const cleanUtmParams = Object.fromEntries(
-    Object.entries(utmParams).filter(([_, v]) => v !== undefined)
-  ) as Record<string, string>;
+  // Get or create session
+  const session = await getOrCreateCookieSession();
 
-  return await getOrCreateSession(
-    referrer,
-    Object.keys(cleanUtmParams).length > 0 ? cleanUtmParams : undefined
-  );
+  // Update metadata if UTM params or referrer present
+  if (referrer || utmSource || utmMedium || utmCampaign) {
+    await updateMetadata({
+      referrer,
+      utmSource,
+      utmMedium,
+      utmCampaign,
+    });
+  }
+
+  return session;
 }
 
 /**
@@ -44,8 +53,8 @@ export async function getServerSession(): Promise<Session> {
  *
  * @returns Session object or null
  */
-export async function getExistingSession(): Promise<Session | null> {
-  return await getCurrentSession();
+export async function getExistingSession(): Promise<CookieSessionData | null> {
+  return await getCurrentCookieSession();
 }
 
 /**
@@ -55,34 +64,29 @@ export async function getExistingSession(): Promise<Session | null> {
  * @param session - Full session object
  * @returns SessionContext for Agent input
  */
-export function sessionToContext(session: Session): SessionContext {
+export function sessionToContext(session: CookieSessionData): SessionContext {
   return {
     sessionId: session.sessionId,
-    visitHistory: session.visitHistory.map((visit) => ({
+    visitHistory: session.recentVisits.map((visit) => ({
       route: visit.route,
-      timestamp: visit.timestamp,
-      summary: visit.summary,
+      timestamp: new Date(visit.timestamp),
+      summary: `Visited ${visit.route}`, // Simple summary for cookie-based sessions
       duration: visit.duration,
     })),
-    interactions: session.interactions.map((interaction) => ({
+    interactions: session.recentInteractions.map((interaction) => ({
       type: interaction.type as "click" | "chat" | "form" | "scroll",
-      timestamp: interaction.timestamp,
-      details: interaction.details as unknown as Record<string, unknown>,
+      timestamp: new Date(interaction.timestamp),
+      details: {}, // Minimal details for cookie-based sessions
     })),
     personaConfidence: session.personaConfidence
       ? {
-          persona: session.personaConfidence.persona as
-            | "brand_manager"
-            | "data_analyst"
-            | "executive"
-            | "researcher"
-            | "unknown",
+          persona: session.personaConfidence.persona,
           confidence: session.personaConfidence.confidence,
-          signals: session.personaConfidence.signals.map((s) => s.type),
+          signals: session.personaConfidence.signals,
         }
       : undefined,
     metadata: {
-      email: session.userMetadata.email,
+      email: session.metadata.email,
       isReturningVisitor: session.flags.isReturningVisitor,
       hasInteracted: session.flags.hasInteracted,
     },
@@ -95,6 +99,6 @@ export function sessionToContext(session: Session): SessionContext {
  * @returns True if session cookie exists
  */
 export async function hasSession(): Promise<boolean> {
-  const session = await getCurrentSession();
+  const session = await getCurrentCookieSession();
   return session !== null;
 }

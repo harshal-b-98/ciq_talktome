@@ -4,6 +4,17 @@
  * CGL-50: Create session read/write utilities for Server Components
  * CGL-54: Implement session retrieval optimization (caching)
  * CGL-55: Build session expiration and cleanup logic
+ *
+ * ⚠️ DEPRECATED: This module is deprecated in favor of iron-session cookie-based sessions.
+ * Session management now uses encrypted cookies (src/lib/session/cookie-session.ts)
+ * instead of Redis/KV storage. This file is kept for backward compatibility with
+ * legacy session utilities (src/lib/session/utils.ts) but should not be used in new code.
+ *
+ * New code should use:
+ * - src/lib/session/cookie-session.ts for session management
+ * - src/lib/server/session.ts for server-side session access
+ *
+ * See: src/lib/session/cookie-session.ts for the new implementation
  */
 
 import { kv } from "../kv";

@@ -14,10 +14,19 @@ This document serves as a comprehensive reference for all implemented features, 
 
 ## Project Status
 
-**Current Phase:** Chat Interface Complete - Story CGL-73 ✅
+**Current Phase:** Session Migration Complete - iron-session Implementation ✅
+**Migration:** Migrated from Redis/KV to iron-session (encrypted cookies)
 **Tickets Completed:** 65/235 (28% Complete)
 **Last Ticket Worked On:** CGL-86 (Integration tests - deferred)
 **Jira Status:** CGL-73 marked as **Done** in Jira
+**Recent Changes:**
+- ✅ **Session Migration (October 7, 2025)**
+  - Replaced Redis/KV mock with iron-session encrypted cookies
+  - No external database required for session management
+  - Simplified deployment with 4KB cookie-based storage
+  - Backward compatibility maintained for legacy code
+  - SESSION_SECRET environment variable required
+
 **Stories Complete:**
 - ✅ CGL-2: Next.js App Structure (13 tickets) - **Jira Status: Done**
 - ✅ CGL-16: Agent Core with Content Retrieval (11 tickets, 2 tests deferred) - **Jira Status: Done**
@@ -97,53 +106,71 @@ This document serves as a comprehensive reference for all implemented features, 
 
 ### Session Management
 
-- ✅ **Session Store** (`src/lib/session/store.ts`)
-  - SessionStore class with Vercel KV (Redis-compatible) backend
-  - Create, get, update, delete, extend operations
-  - Automatic serialization/deserialization of Date objects
-  - TTL management: 30-day sessions with automatic cleanup
-  - Size limit enforcement: 100KB max with automatic trimming
-  - Session expiration checking on retrieval
+**Note:** Session management migrated from Redis/KV to iron-session (encrypted cookies) for simplified deployment.
 
-- ✅ **Session Types** (`src/lib/session/types.ts`)
-  - `Session`: Main session object with metadata, visit history, interactions, persona confidence, flags
-  - `UserMetadata`: User information including email, UTM params, visit timestamps
-  - `VisitRecord`: Individual page visit with AI-generated summary
-  - `InteractionRecord`: User interactions (9 types: click, chat, form_submit, scroll, page_view, cta_click, download, video_play, search)
-  - `PersonaConfidence`: Persona detection with confidence score (0-1) and weighted signals
-  - 5 Personas: BRAND_MANAGER, DATA_ANALYST, EXECUTIVE, RESEARCHER, DEVELOPER, UNKNOWN
-  - `SessionFlags`: Boolean flags for bot detection, returning visitor, interactions, email capture
-  - `SessionConfig`: Configuration for TTL, history limits, compression
+#### Active Implementation (iron-session)
 
-- ✅ **Session Cookies** (`src/lib/session/cookies.ts`)
-  - Secure cookie management with httpOnly, secure, sameSite=lax
-  - Cookie name: `ciq_session`
-  - 30-day cookie maxAge
-  - Functions: setSessionCookie, getSessionCookie, deleteSessionCookie, hasSessionCookie
+- ✅ **Cookie-Based Session** (`src/lib/session/cookie-session.ts`)
+  - **Iron-session integration**: Encrypted cookie-based sessions
+  - **Cookie name**: `ciq_session`
+  - **Encryption**: AES-256-GCM with SESSION_SECRET
+  - **Storage limits**: Optimized for 4KB cookie limit
+  - **Session duration**: 30 days (configurable)
+  - **Data structure**: `CookieSessionData` interface
+    - Session ID and timestamps (ISO strings)
+    - Recent visits: Last 10 visits with route, timestamp, duration
+    - Recent interactions: Last 15 interactions (type, timestamp, route)
+    - Persona confidence: Top persona with confidence score and top 5 signals
+    - User metadata: Email, referrer, UTM params, visit counts
+    - Session flags: Bot detection, returning visitor, interaction types
+  - **Functions**:
+    - `getOrCreateCookieSession()`: Get or create session
+    - `getCurrentCookieSession()`: Get session without creating
+    - `addVisit(route, duration)`: Record page visit (keeps last 10)
+    - `addInteraction(type, route)`: Log interaction (keeps last 15)
+    - `updatePersonaConfidence(persona, confidence, signals)`: Update persona
+    - `updateMetadata(updates)`: Update user metadata
+    - `clearSession()`: Delete session cookie
+  - **Configuration**:
+    - Cookie options: httpOnly, secure (prod), sameSite=lax, 30-day maxAge
+    - Password: `process.env.SESSION_SECRET` (required, min 32 chars)
 
-- ✅ **Session Utilities** (`src/lib/session/utils.ts`)
-  - `getOrCreateSession()`: Get existing or create new session with referrer and UTM tracking
-  - `getCurrentSession()`: Get current session (returns null if doesn't exist)
-  - `updateCurrentSession()`: Update current session with partial updates
-  - `recordVisit()`: Record page visit with AI-generated 1-2 line summary
-  - `updateVisitDuration()`: Update visit duration when user leaves page
-  - `logInteraction()`: Log user interactions with automatic flag updates
-  - `captureEmail()`: Update session with captured email and additional data
-  - `updatePersonaFromInteraction()`: Weighted persona detection from user behavior
-  - `updatePersonaConfidence()`: Calculate persona confidence scores from signals
+- ✅ **Server Session Utilities** (`src/lib/server/session.ts`)
+  - **Primary interface** for Server Components
+  - `getServerSession()`: Get/create session with UTM tracking
+  - `getExistingSession()`: Get session without creating
+  - `sessionToContext(session)`: Convert to Agent SessionContext
+  - `hasSession()`: Check if session exists
+  - Automatically extracts UTM params from cookies
+  - Returns `CookieSessionData` type
 
-- ✅ **Session Middleware** (`src/lib/session/middleware.ts`)
-  - `initializeSession()`: Initialize session for Server Components
-  - UTM parameter extraction from referrer URLs
-  - Bot detection using user agent analysis
-  - Automatic session creation and visit recording
+- ✅ **Environment Configuration**
+  - `SESSION_SECRET`: Encryption key for iron-session (min 32 characters)
+  - Set in `.env.local` for development
+  - Must be set in production environment variables
 
-- ✅ **Mock KV Store** (`src/lib/kv-mock.ts`)
-  - In-memory Map storage for local development
-  - Full Vercel KV API compatibility
-  - Automatic cleanup of expired entries every 60 seconds
-  - Methods: get, set, del, expire, ttl, exists, keys, getSize, clear
-  - Console logging for debugging
+#### Legacy Implementation (Deprecated)
+
+- ⚠️ **DEPRECATED: Session Store** (`src/lib/session/store.ts`)
+  - Legacy KV-based session management
+  - Kept for backward compatibility only
+  - Use `cookie-session.ts` for new code
+
+- ⚠️ **DEPRECATED: Session Utilities** (`src/lib/session/utils.ts`)
+  - Legacy utilities using KV store
+  - Functions: getOrCreateSession, recordVisit, logInteraction, etc.
+  - Kept for backward compatibility
+  - Use `cookie-session.ts` and `server/session.ts` for new code
+
+- ⚠️ **DEPRECATED: Session Types** (`src/lib/session/types.ts`)
+  - Legacy `Session` type for KV-based sessions
+  - Still used by deprecated utilities
+  - New code uses `CookieSessionData` from `cookie-session.ts`
+
+- ⚠️ **DEPRECATED: Mock KV Store** (`src/lib/kv-mock.ts`, `src/lib/kv.ts`)
+  - In-memory Map storage for development
+  - Replaced by iron-session encrypted cookies
+  - No external database needed anymore
 
 ### Server Components Integration (CGL-59)
 
@@ -176,14 +203,18 @@ This document serves as a comprehensive reference for all implemented features, 
 
 - ✅ **Chat Server Actions** (`src/lib/chat/actions.ts`) - CGL-76
   - `handleChatMessage(request)`: Main Server Action for chat handling
-  - `getChatHistory()`: Retrieves chat history from session
+  - `getChatHistory()`: Chat history retrieval (client-side managed)
   - Features:
     - Chat prompt composition with context (CGL-77)
     - OpenAI GPT-4 integration for responses (CGL-79)
-    - Session memory updates with chat summaries (CGL-81)
+    - Session interaction logging via `addInteraction("chat", route)` (CGL-81)
     - Persona signal extraction from messages (CGL-83)
     - Citation support structure (CGL-80)
     - Error handling with fallback responses
+  - **Note on iron-session migration**:
+    - Full chat message history now managed client-side (4KB cookie limit)
+    - Session tracks that chats occurred via `recentInteractions`
+    - ChatWidget component handles message persistence in state/localStorage
 
 - ✅ **Chat Types** (`src/lib/chat/types.ts`)
   - `ChatMessage`: Message structure (id, role, content, citations, timestamp)
@@ -192,9 +223,10 @@ This document serves as a comprehensive reference for all implemented features, 
   - `ChatAgentInput/Output`: Agent integration types
 
 - ✅ **Chat History Persistence** - CGL-82
-  - Chat interactions stored in session as InteractionType.CHAT
-  - History retrieved and converted to ChatMessage format
-  - Persists across page navigations during session
+  - Chat interactions logged in session as type "chat"
+  - Full message history managed client-side in ChatWidget component
+  - Session tracks chat occurrence count via `recentInteractions`
+  - Future enhancement: Could store last 2-3 messages in cookie session
 
 - ✅ **Persona Signals** - CGL-83
   - Extracts persona hints from user messages

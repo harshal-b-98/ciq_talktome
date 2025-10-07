@@ -2,6 +2,13 @@
  * Mock Vercel KV for Local Development
  * This file provides a mock implementation of Vercel KV for local development
  * when KV_REST_API_URL and KV_REST_API_TOKEN are not set
+ *
+ * ⚠️ DEPRECATED: This module is deprecated in favor of iron-session cookie-based sessions.
+ * Session management now uses encrypted cookies (src/lib/session/cookie-session.ts)
+ * instead of Redis/KV storage. This file is kept for backward compatibility with
+ * legacy session utilities but should not be used in new code.
+ *
+ * See: src/lib/session/cookie-session.ts for the new implementation
  */
 
 // In-memory store for development
