@@ -63,15 +63,57 @@ OPENAI_API_KEY=sk-...
 
 ---
 
+---
+
+## CGL-46: Session Store
+
+**Decision Date:** October 7, 2025
+**Status:** ✅ DECIDED
+
+### Session Store: Vercel KV
+
+**Selected:** Vercel KV (Redis-compatible)
+**Reasoning:**
+- Native integration with Next.js and Vercel platform
+- Redis-compatible for fast in-memory operations
+- Managed service with zero ops overhead
+- Built-in TTL (Time To Live) support for automatic session expiration
+- Edge-compatible for global low-latency access
+- Simple migration path to self-hosted Redis if needed
+
+**Alternatives Considered:**
+- Redis: Requires separate service management and infrastructure
+- PostgreSQL: Slower for high-frequency session operations, better for persistent data
+
+### Dependencies Installed
+
+```json
+{
+  "@vercel/kv": "^3.0.0"
+}
+```
+
+### Environment Variables Required
+
+```env
+KV_REST_API_URL=<your-kv-rest-api-url>
+KV_REST_API_TOKEN=<your-kv-rest-api-token>
+```
+
+### Configuration
+
+- Session TTL: 30 days (configurable)
+- Key prefix: `session:`
+- Cookie name: `ciq_session`
+- Cookie options: httpOnly, secure, sameSite=lax
+
+---
+
 ## Future Technology Decisions
 
 ### Vector Database (Story CGL-30)
 - TBD: Pinecone, Weaviate, or Supabase pgvector
 - Requirement: Semantic search for content retrieval
-
-### Session Store (Story CGL-45)
-- TBD: Redis, Vercel KV, or PostgreSQL
-- Requirement: Fast session read/write with expiration
 
 ### Monitoring & Analytics (Story CGL-184)
 - TBD: Vercel Analytics, Datadog, or custom solution
