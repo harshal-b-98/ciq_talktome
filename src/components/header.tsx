@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Navigation } from "./navigation";
 
 export function Header() {
   return (
@@ -7,32 +8,7 @@ export function Header() {
         <Link href="/" className="text-xl font-bold">
           ConsumerIQ
         </Link>
-        <nav className="hidden md:flex items-center gap-6">
-          <Link
-            href="/"
-            className="text-sm font-medium transition-colors hover:text-primary"
-          >
-            Home
-          </Link>
-          <Link
-            href="/features"
-            className="text-sm font-medium transition-colors hover:text-primary"
-          >
-            Features
-          </Link>
-          <Link
-            href="/about"
-            className="text-sm font-medium transition-colors hover:text-primary"
-          >
-            About
-          </Link>
-          <Link
-            href="/contact"
-            className="text-sm font-medium transition-colors hover:text-primary"
-          >
-            Contact
-          </Link>
-        </nav>
+        <Navigation />
       </div>
     </header>
   );

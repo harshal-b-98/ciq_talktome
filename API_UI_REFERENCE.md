@@ -15,8 +15,8 @@ This document serves as a comprehensive reference for all implemented features, 
 ## Project Status
 
 **Current Phase:** Foundation - Story 1 (Next.js App Structure)
-**Tickets Completed:** 3/235 (CGL-3, CGL-4, CGL-5)
-**Last Ticket Worked On:** CGL-5 (Create root layout with header and footer components)
+**Tickets Completed:** 4/235 (CGL-3, CGL-4, CGL-5, CGL-6)
+**Last Ticket Worked On:** CGL-6 (Implement navigation component with active state)
 
 ---
 
@@ -35,8 +35,15 @@ No API endpoints implemented yet.
 #### Layout Components
 - ✅ **Header** (`src/components/header.tsx`)
   - Persistent header with logo and navigation
+  - Integrates Navigation component
+  - Responsive design
+
+- ✅ **Navigation** (`src/components/navigation.tsx`)
+  - Client component with active state tracking
+  - Uses `usePathname()` hook for route detection
+  - Active link styling with visual feedback
   - Links: Home, Features, About, Contact
-  - Responsive design (mobile menu hidden on small screens)
+  - Responsive (hidden on mobile, shown on md+)
 
 - ✅ **Footer** (`src/components/footer.tsx`)
   - Copyright notice with dynamic year
@@ -131,6 +138,14 @@ No vector store collections implemented yet.
 - Implemented flex layout with sticky header/footer
 - Updated metadata (title: "ConsumerIQ - Talk 2 Me")
 - Build successful (compiled in 20.8s)
+
+#### CGL-6: Implement navigation component with active state ✅
+- Created Navigation component (`src/components/navigation.tsx`) as client component
+- Implemented active state detection using `usePathname()` hook
+- Active link styling: foreground color for active, muted-foreground for inactive
+- Smart route matching: exact match for home ("/"), prefix match for others
+- Refactored Header to use Navigation component
+- Build successful (compiled in 6.1s)
 
 ---
 

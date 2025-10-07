@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git commit -m \"$(cat <<''EOF''\n[CGL-5] Create root layout with header and footer components\n\n- Created Header component (src/components/header.tsx) with navigation\n  - Added links to Home, Features, About, Contact\n  - Responsive design with mobile considerations\n- Created Footer component (src/components/footer.tsx)\n  - Copyright notice with dynamic year\n  - Quick links to About and Contact pages\n- Updated root layout (src/app/layout.tsx)\n  - Integrated Header and Footer components\n  - Implemented flex layout for sticky header/footer\n  - Updated metadata: title \"ConsumerIQ - Talk 2 Me\"\n- Build verified successful (20.8s)\n- Updated API_UI_REFERENCE.md and Confluence docs\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
+      "Bash(git commit -m \"$(cat <<''EOF''\n[CGL-5] Create root layout with header and footer components\n\n- Created Header component (src/components/header.tsx) with navigation\n  - Added links to Home, Features, About, Contact\n  - Responsive design with mobile considerations\n- Created Footer component (src/components/footer.tsx)\n  - Copyright notice with dynamic year\n  - Quick links to About and Contact pages\n- Updated root layout (src/app/layout.tsx)\n  - Integrated Header and Footer components\n  - Implemented flex layout for sticky header/footer\n  - Updated metadata: title \"ConsumerIQ - Talk 2 Me\"\n- Build verified successful (20.8s)\n- Updated API_UI_REFERENCE.md and Confluence docs\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []
