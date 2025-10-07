@@ -98,7 +98,15 @@ ${groundingInstructions}`;
     });
 
     // Step 4: Parse and validate response
-    const contentData = JSON.parse(result.text);
+    // Handle markdown code blocks if present (```json ... ```)
+    let jsonText = result.text.trim();
+    if (jsonText.startsWith("```json")) {
+      jsonText = jsonText.replace(/^```json\s*\n/, "").replace(/\n```\s*$/, "");
+    } else if (jsonText.startsWith("```")) {
+      jsonText = jsonText.replace(/^```\s*\n/, "").replace(/\n```\s*$/, "");
+    }
+
+    const contentData = JSON.parse(jsonText);
 
     const output: AgentOutput = {
       content: contentData,
