@@ -1,6 +1,15 @@
+/**
+ * Features Index Page with Agent Integration
+ * CGL-63: Build content fetching logic for features index
+ */
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import type { Metadata } from "next";
+import { getServerSession, sessionToContext } from "@/lib/server/session";
+import { fetchAgentContent, getFallbackContent } from "@/lib/agent/client";
+import { Hero } from "@/components/content/hero";
+import { CtaSection } from "@/components/content/cta-section";
 
 export const metadata: Metadata = {
   title: "Features - ConsumerIQ",
@@ -15,6 +24,12 @@ export const metadata: Metadata = {
     "custom dashboards",
   ],
 };
+
+/**
+ * CGL-71: Optimize Server Component caching strategy
+ */
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 const features = [
   {
@@ -145,19 +160,26 @@ const features = [
   },
 ];
 
-export default function FeaturesPage() {
+export default async function FeaturesPage() {
+  // Get session for personalization
+  const session = await getServerSession();
+  const sessionContext = sessionToContext(session);
+
+  // Fetch Agent-powered content
+  let agentOutput;
+  try {
+    agentOutput = await fetchAgentContent("/features", sessionContext);
+  } catch (error) {
+    console.error("Agent failed, using fallback:", error);
+    agentOutput = getFallbackContent("/features");
+  }
+
+  const { content } = agentOutput;
+
   return (
     <div className="container mx-auto px-4 py-12">
-      {/* Header */}
-      <div className="text-center space-y-4 mb-16">
-        <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
-          Powerful Features
-        </h1>
-        <p className="text-xl text-muted-foreground max-w-[800px] mx-auto">
-          Everything you need to understand your market, track consumer trends,
-          and make data-driven decisions for your business.
-        </p>
-      </div>
+      {/* Agent-powered Hero */}
+      <Hero content={content} />
 
       {/* Features Grid */}
       <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 mb-16">
@@ -178,24 +200,13 @@ export default function FeaturesPage() {
         ))}
       </div>
 
-      {/* CTA Section */}
-      <div className="rounded-lg border bg-card p-8 md:p-12 text-center space-y-6">
-        <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-          Ready to Get Started?
-        </h2>
-        <p className="text-lg text-muted-foreground max-w-[600px] mx-auto">
-          Discover how ConsumerIQ can transform your business with AI-powered
-          market intelligence.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button size="lg" asChild>
-            <Link href="/contact">Request a Demo</Link>
-          </Button>
-          <Button size="lg" variant="outline" asChild>
-            <Link href="/about">Learn About Us</Link>
-          </Button>
-        </div>
-      </div>
+      {/* Agent-powered CTA Section */}
+      <CtaSection
+        title="Ready to Get Started?"
+        description="Discover how ConsumerIQ can transform your business with AI-powered market intelligence."
+        cta={content.cta}
+        relatedLinks={content.relatedLinks}
+      />
     </div>
   );
 }

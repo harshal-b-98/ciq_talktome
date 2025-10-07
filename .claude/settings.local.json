@@ -5,7 +5,16 @@
       "Bash(git commit:*)",
       "Bash(npm run dev:*)",
       "Bash(npm install:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "mcp__atlassian__getJiraIssue",
+      "Read(//d/**)",
+      "Bash(cd:*)",
+      "mcp__atlassian__getTransitionsForJiraIssue",
+      "mcp__atlassian__transitionJiraIssue",
+      "mcp__atlassian__addCommentToJiraIssue",
+      "Bash(git add:*)",
+      "Bash(git push:*)",
+      "Bash(npx shadcn@latest add:*)"
     ],
     "deny": [],
     "ask": []
