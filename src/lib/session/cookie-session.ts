@@ -115,11 +115,18 @@ export function initializeSessionData(): CookieSessionData {
 
 /**
  * Get or create session
+ *
+ * @param readOnly - If true, don't create or modify session (for use in generateMetadata/rendering)
  */
-export async function getOrCreateCookieSession(): Promise<CookieSessionData> {
+export async function getOrCreateCookieSession(readOnly: boolean = false): Promise<CookieSessionData> {
   const session = await getIronCookieSession();
 
   if (!session.sessionId) {
+    if (readOnly) {
+      // Return a temporary session without saving (can't modify cookies during rendering)
+      return initializeSessionData();
+    }
+
     // Initialize new session
     const newSessionData = initializeSessionData();
     Object.assign(session, newSessionData);
@@ -127,11 +134,13 @@ export async function getOrCreateCookieSession(): Promise<CookieSessionData> {
     return session as CookieSessionData;
   }
 
-  // Update last visit
-  session.lastVisit = new Date().toISOString();
-  session.metadata.totalVisits = (session.metadata.totalVisits || 0) + 1;
-  session.flags.isReturningVisitor = session.metadata.totalVisits > 1;
-  await session.save();
+  if (!readOnly) {
+    // Update last visit (only if not read-only)
+    session.lastVisit = new Date().toISOString();
+    session.metadata.totalVisits = (session.metadata.totalVisits || 0) + 1;
+    session.flags.isReturningVisitor = session.metadata.totalVisits > 1;
+    await session.save();
+  }
 
   return session as CookieSessionData;
 }

@@ -14,7 +14,10 @@
       "mcp__atlassian__addCommentToJiraIssue",
       "Bash(git add:*)",
       "Bash(git push:*)",
-      "Bash(npx shadcn@latest add:*)"
+      "Bash(npx shadcn@latest add:*)",
+      "Bash(echo $PINECONE_API_KEY)",
+      "Bash(curl -s -X GET \"https://api.pinecone.io/indexes\" -H \"Api-Key: pcsk_3g2E3w_EmDMnDSqqcQhf6NeUs1o6bL8nic2JHQPgxsxuBdaSCWb1HntWww88gTXYrzhPZY\" -H \"Content-Type: application/json\")",
+      "Bash(or Route Handler\"\n\n## Issue:\n- generateMetadata() was calling getServerSession() which tried to \n  create/modify session cookies\n- Next.js 15 prohibits cookie modification during metadata generation\n- Error occurred on homepage and potentially other pages\n\n## Solution:\n- Added readOnly parameter to getOrCreateCookieSession()\n- Added readOnly parameter to getServerSession()\n- When readOnly=true:\n  - Returns temporary session without saving (if new session)\n  - Doesn''t update lastVisit or totalVisits (if existing session)\n  - Doesn''t attempt to save cookies\n- Updated homepage generateMetadata() to call getServerSession(true)\n\n## Files Changed:\n- src/lib/session/cookie-session.ts: Added readOnly logic\n- src/lib/server/session.ts: Propagate readOnly flag\n- src/app/page.tsx: Use readOnly=true in generateMetadata\n\n## Testing:\n- Server starts without errors\n- Homepage metadata generation works\n- Page rendering still creates/updates sessions normally\n- Only metadata generation is read-only\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
     ],
     "deny": [],
     "ask": []

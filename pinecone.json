@@ -1,0 +1,8 @@
+{
+  "type": "stdio",
+  "command": "npx",
+  "args": ["-y", "@pinecone-database/mcp"],
+  "env": {
+    "PINECONE_API_KEY": "pcsk_3g2E3w_EmDMnDSqqcQhf6NeUs1o6bL8nic2JHQPgxsxuBdaSCWb1HntWww88gTXYrzhPZY"
+  }
+}

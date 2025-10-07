@@ -16,7 +16,8 @@ import { fetchHomeContent, getFallbackContent } from "@/lib/agent/client";
  */
 export async function generateMetadata(): Promise<Metadata> {
   try {
-    const session = await getServerSession();
+    // Use readOnly=true to avoid cookie modification during metadata generation
+    const session = await getServerSession(true);
     const sessionContext = sessionToContext(session);
     const agentOutput = await fetchHomeContent(sessionContext);
 

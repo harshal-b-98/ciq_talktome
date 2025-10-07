@@ -20,9 +20,10 @@ import type { SessionContext } from "../agent/types";
  * Get or create session for Server Components
  * This is the primary method for Server Components to access session data
  *
+ * @param readOnly - If true, don't create or modify session (for use in generateMetadata)
  * @returns Session object with user context
  */
-export async function getServerSession(): Promise<CookieSessionData> {
+export async function getServerSession(readOnly: boolean = false): Promise<CookieSessionData> {
   const cookieStore = await cookies();
   const referrer = cookieStore.get("referer")?.value;
 
@@ -32,10 +33,10 @@ export async function getServerSession(): Promise<CookieSessionData> {
   const utmCampaign = cookieStore.get("utm_campaign")?.value;
 
   // Get or create session
-  const session = await getOrCreateCookieSession();
+  const session = await getOrCreateCookieSession(readOnly);
 
-  // Update metadata if UTM params or referrer present
-  if (referrer || utmSource || utmMedium || utmCampaign) {
+  // Update metadata if UTM params or referrer present (only if not read-only)
+  if (!readOnly && (referrer || utmSource || utmMedium || utmCampaign)) {
     await updateMetadata({
       referrer,
       utmSource,
