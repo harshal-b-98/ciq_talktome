@@ -51,8 +51,8 @@ export const dynamic = "force-dynamic"; // Ensure personalization works
 export const revalidate = 0; // Don't cache at build time
 
 export default async function Home() {
-  // Get session for personalization
-  const session = await getServerSession();
+  // Get session for personalization (middleware handles creation/updates)
+  const session = await getServerSession(true);
   const sessionContext = sessionToContext(session);
 
   // Fetch Agent-powered content

@@ -31,8 +31,8 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function AboutPage() {
-  // Get session for personalization
-  const session = await getServerSession();
+  // Get session for personalization (middleware handles creation/updates)
+  const session = await getServerSession(true);
   const sessionContext = sessionToContext(session);
 
   // Fetch Agent-powered content

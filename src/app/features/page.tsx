@@ -161,8 +161,8 @@ const features = [
 ];
 
 export default async function FeaturesPage() {
-  // Get session for personalization
-  const session = await getServerSession();
+  // Get session for personalization (middleware handles creation/updates)
+  const session = await getServerSession(true);
   const sessionContext = sessionToContext(session);
 
   // Fetch Agent-powered content

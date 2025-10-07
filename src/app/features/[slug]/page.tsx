@@ -169,8 +169,8 @@ export default async function FeaturePage({ params }: FeaturePageProps) {
     notFound();
   }
 
-  // Get session for personalization
-  const session = await getServerSession();
+  // Get session for personalization (middleware handles creation/updates)
+  const session = await getServerSession(true);
   const sessionContext = sessionToContext(session);
 
   // Fetch Agent-powered content for this feature
