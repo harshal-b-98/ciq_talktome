@@ -47,9 +47,9 @@ The CGL project is building an AI-powered conversational marketing website for t
 
 **Key Subtasks:**
 
-* CGL-3: Initialize Next.js project with App Router and TypeScript
-* CGL-4: Configure tailwind.css and install shadcn/ui
-* CGL-5: Create root layout with header and footer components
+* CGL-3: Initialize Next.js project with App Router and TypeScript ✅ DONE
+* CGL-4: Configure tailwind.css and install shadcn/ui ✅ DONE
+* CGL-5: Create root layout with header and footer components ✅ DONE
 * CGL-6: Implement navigation component with active state
 * CGL-7: Create homepage route (/app/page.tsx)
 * CGL-8: Create features index route (/app/features/page.tsx)

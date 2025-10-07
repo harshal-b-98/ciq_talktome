@@ -1,21 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "mcp__atlassian__search",
-      "mcp__atlassian__searchConfluenceUsingCql",
-      "mcp__atlassian__searchJiraIssuesUsingJql",
-      "mcp__atlassian__getConfluenceSpaces",
-      "mcp__atlassian__fetch",
-      "Bash(mkdir:*)",
-      "Bash(npx shadcn@latest init:*)",
-      "Bash(test:*)",
-      "mcp__atlassian__getJiraIssue",
-      "Bash(npm install:*)",
-      "Bash(npm run build:*)",
-      "mcp__atlassian__transitionJiraIssue",
-      "mcp__atlassian__getTransitionsForJiraIssue",
-      "Bash(git add:*)",
-      "Bash(git commit -m \"$(cat <<''EOF''\n[CGL-4] Configure tailwind.css and install shadcn/ui\n\n- Configured shadcn/ui with New York style and CSS variables\n- Created components.json configuration file\n- Installed dependencies: clsx, tailwind-merge, class-variance-authority, @radix-ui/react-slot\n- Created src/lib/utils.ts with cn() helper function\n- Updated globals.css with shadcn/ui CSS variables and theme system\n- Created Button component (src/components/ui/button.tsx) with variants and sizes\n- Updated homepage to test Button component integration\n- Build verified successful\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
+      "Bash(git commit -m \"$(cat <<''EOF''\n[CGL-5] Create root layout with header and footer components\n\n- Created Header component (src/components/header.tsx) with navigation\n  - Added links to Home, Features, About, Contact\n  - Responsive design with mobile considerations\n- Created Footer component (src/components/footer.tsx)\n  - Copyright notice with dynamic year\n  - Quick links to About and Contact pages\n- Updated root layout (src/app/layout.tsx)\n  - Integrated Header and Footer components\n  - Implemented flex layout for sticky header/footer\n  - Updated metadata: title \"ConsumerIQ - Talk 2 Me\"\n- Build verified successful (20.8s)\n- Updated API_UI_REFERENCE.md and Confluence docs\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
     ],
     "deny": [],
     "ask": []

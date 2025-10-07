@@ -15,8 +15,8 @@ This document serves as a comprehensive reference for all implemented features, 
 ## Project Status
 
 **Current Phase:** Foundation - Story 1 (Next.js App Structure)
-**Tickets Completed:** 2/235 (CGL-3, CGL-4)
-**Last Ticket Worked On:** CGL-4 (Configure tailwind.css and install shadcn/ui)
+**Tickets Completed:** 3/235 (CGL-3, CGL-4, CGL-5)
+**Last Ticket Worked On:** CGL-5 (Create root layout with header and footer components)
 
 ---
 
@@ -31,6 +31,17 @@ This document serves as a comprehensive reference for all implemented features, 
 No API endpoints implemented yet.
 
 ### UI Components
+
+#### Layout Components
+- ✅ **Header** (`src/components/header.tsx`)
+  - Persistent header with logo and navigation
+  - Links: Home, Features, About, Contact
+  - Responsive design (mobile menu hidden on small screens)
+
+- ✅ **Footer** (`src/components/footer.tsx`)
+  - Copyright notice with dynamic year
+  - Quick links to About and Contact
+  - Responsive layout
 
 #### shadcn/ui Components
 - ✅ **Button** (`src/components/ui/button.tsx`)
@@ -112,6 +123,14 @@ No vector store collections implemented yet.
 - Created Button component (`src/components/ui/button.tsx`)
 - Updated homepage to test Button component
 - Build successful (compiled in 32.6s)
+
+#### CGL-5: Create root layout with header and footer components ✅
+- Created Header component (`src/components/header.tsx`) with navigation links
+- Created Footer component (`src/components/footer.tsx`) with copyright and quick links
+- Updated root layout (`src/app/layout.tsx`) to include Header and Footer
+- Implemented flex layout with sticky header/footer
+- Updated metadata (title: "ConsumerIQ - Talk 2 Me")
+- Build successful (compiled in 20.8s)
 
 ---
 
