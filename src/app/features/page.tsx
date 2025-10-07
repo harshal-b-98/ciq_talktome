@@ -1,5 +1,20 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Features - ConsumerIQ",
+  description:
+    "Explore ConsumerIQ's powerful features: real-time analytics, AI-powered insights, market intelligence, product tracking, custom dashboards, and enterprise security.",
+  keywords: [
+    "features",
+    "real-time analytics",
+    "AI insights",
+    "market intelligence",
+    "product tracking",
+    "custom dashboards",
+  ],
+};
 
 const features = [
   {

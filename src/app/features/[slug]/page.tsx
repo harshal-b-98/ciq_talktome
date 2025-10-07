@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import type { Metadata } from "next";
 
 const featuresData = {
   "real-time-analytics": {
@@ -117,6 +118,27 @@ export async function generateStaticParams() {
   return Object.keys(featuresData).map((slug) => ({
     slug,
   }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const feature = featuresData[slug as keyof typeof featuresData];
+
+  if (!feature) {
+    return {
+      title: "Feature Not Found - ConsumerIQ",
+    };
+  }
+
+  return {
+    title: `${feature.title} - ConsumerIQ`,
+    description: feature.description,
+    keywords: [feature.title, "ConsumerIQ", "consumer intelligence", "analytics"],
+  };
 }
 
 interface FeaturePageProps {
