@@ -14,15 +14,16 @@ This document serves as a comprehensive reference for all implemented features, 
 
 ## Project Status
 
-**Current Phase:** Server Components Integration Complete - Story CGL-59 ✅
-**Tickets Completed:** 52/235 (22% Complete)
-**Last Ticket Worked On:** CGL-71 (Optimize Server Component caching strategy)
-**Jira Status:** CGL-59 marked as **Done** in Jira
+**Current Phase:** Chat Interface Complete - Story CGL-73 ✅
+**Tickets Completed:** 65/235 (28% Complete)
+**Last Ticket Worked On:** CGL-86 (Integration tests - deferred)
+**Jira Status:** CGL-73 ready for Done status (auth issue)
 **Stories Complete:**
 - ✅ CGL-2: Next.js App Structure (13 tickets) - **Jira Status: Done**
 - ✅ CGL-16: Agent Core with Content Retrieval (11 tickets, 2 tests deferred) - **Jira Status: Done**
 - ✅ CGL-45: Session Management and Memory System (11 tickets, 2 tests deferred) - **Jira Status: Done**
 - ✅ CGL-59: Server Components with Agent Integration (13 tickets) - **Jira Status: Done**
+- ✅ CGL-73: Chat Interface with Server Actions (13 tickets, 2 tests deferred) - **Jira Status: Pending**
 
 ---
 
@@ -171,6 +172,35 @@ This document serves as a comprehensive reference for all implemented features, 
   - Ensures personalization works correctly
   - Applied to: home, features, feature detail, about pages
 
+### Chat System (CGL-73)
+
+- ✅ **Chat Server Actions** (`src/lib/chat/actions.ts`) - CGL-76
+  - `handleChatMessage(request)`: Main Server Action for chat handling
+  - `getChatHistory()`: Retrieves chat history from session
+  - Features:
+    - Chat prompt composition with context (CGL-77)
+    - OpenAI GPT-4 integration for responses (CGL-79)
+    - Session memory updates with chat summaries (CGL-81)
+    - Persona signal extraction from messages (CGL-83)
+    - Citation support structure (CGL-80)
+    - Error handling with fallback responses
+
+- ✅ **Chat Types** (`src/lib/chat/types.ts`)
+  - `ChatMessage`: Message structure (id, role, content, citations, timestamp)
+  - `ChatRequest`: Request payload (message, sessionId, route, chatHistory)
+  - `ChatResponse`: Response structure (message, citations, messageId, success)
+  - `ChatAgentInput/Output`: Agent integration types
+
+- ✅ **Chat History Persistence** - CGL-82
+  - Chat interactions stored in session as InteractionType.CHAT
+  - History retrieved and converted to ChatMessage format
+  - Persists across page navigations during session
+
+- ✅ **Persona Signals** - CGL-83
+  - Extracts persona hints from user messages
+  - Detects: brand_manager, data_analyst, executive, researcher interests
+  - Keywords-based detection for persona classification
+
 ### API Endpoints
 
 No REST API endpoints implemented yet.
@@ -262,6 +292,22 @@ No REST API endpoints implemented yet.
   - Displays title, description, primary CTA, and related links
   - Primary background color with centered text
   - Used on: all Agent-powered pages
+
+#### Chat Components (CGL-73)
+- ✅ **ChatWidget** (`src/components/chat/chat-widget.tsx`)
+  - Floating chat widget accessible on all pages
+  - Features:
+    - Toggle button (bottom-right corner)
+    - Chat window with message history
+    - User input field with send button
+    - Real-time message display (user/assistant)
+    - Citation display for assistant responses
+    - Auto-scroll to latest message
+    - Loading indicator during response
+    - Chat history persistence via session
+  - Uses Server Actions for message handling
+  - Responsive design (96 width, 600px height)
+  - Integrated in root layout
 
 #### shadcn/ui Components
 - ✅ **Button** (`src/components/ui/button.tsx`)
